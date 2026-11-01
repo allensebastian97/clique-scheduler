@@ -118,3 +118,7 @@ to `Failed` the way a kubelet would move them.
 * Placement and defrag are greedy, not optimal.
 * Recovering a replaced pod into a running job (re-forming NCCL groups) is
   up to the training framework (e.g. torchrun elastic, Ray, TorchFT).
+
+## License
+
+Apache License 2.0. See [LICENSE](LICENSE).
