@@ -1,0 +1,134 @@
+{
+  "description": "random fragmented cluster, seed 10",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 16,
+    "B": 17,
+    "C": 17,
+    "D": 18,
+    "E": 16,
+    "F": 16
+  },
+  "unhealthy": [
+    "C02",
+    "D12",
+    "E15"
+  ],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "A01",
+        "A12",
+        "A03",
+        "A08",
+        "A13",
+        "A11"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "A06",
+        "A07"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "B13",
+        "B02",
+        "B00",
+        "B05",
+        "B09"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "B07",
+        "B03",
+        "B10",
+        "B16",
+        "B11",
+        "B12"
+      ]
+    },
+    {
+      "name": "g4",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "D05",
+        "D02",
+        "D16",
+        "D11",
+        "D08"
+      ]
+    },
+    {
+      "name": "g5",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "D06",
+        "D01"
+      ]
+    },
+    {
+      "name": "g6",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "D00",
+        "D03"
+      ]
+    },
+    {
+      "name": "g7",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "D10",
+        "D13",
+        "D17",
+        "D15",
+        "D07"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 12,
+      "slice_size": 4,
+      "priority": 0
+    }
+  ],
+  "op": "fits_ignoring_topology",
+  "gang": "job",
+  "expect": true
+}

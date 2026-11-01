@@ -1,0 +1,58 @@
+{
+  "description": "A pod tolerating the taint may use A00.",
+  "reserve": 0,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18
+  },
+  "unhealthy": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "A10",
+    "A11",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17"
+  ],
+  "taints": {
+    "A00": [
+      {
+        "key": "maintenance",
+        "value": "yes",
+        "effect": "NoSchedule"
+      }
+    ]
+  },
+  "gangs": [
+    {
+      "name": "job",
+      "size": 1,
+      "slice_size": 16,
+      "tolerations": [
+        {
+          "key": "maintenance",
+          "operator": "Exists"
+        }
+      ]
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "A00"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

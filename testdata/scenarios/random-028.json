@@ -1,0 +1,60 @@
+{
+  "description": "random fragmented cluster, seed 28",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 16
+  },
+  "unhealthy": [
+    "A11",
+    "A14"
+  ],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 5,
+      "nodes": [
+        "B07",
+        "B01",
+        "B00",
+        "B05",
+        "B15",
+        "B06"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 3,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "A09",
+        "A12",
+        "A03"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 4,
+      "slice_size": 8,
+      "priority": 0
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "B02",
+      "ns/job-1": "B03",
+      "ns/job-2": "B04",
+      "ns/job-3": "B08"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

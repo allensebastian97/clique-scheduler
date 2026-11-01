@@ -1,0 +1,25 @@
+{
+  "description": "random fragmented cluster, seed 16",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 17,
+    "B": 17,
+    "C": 17,
+    "D": 17
+  },
+  "unhealthy": [
+    "D06"
+  ],
+  "gangs": [
+    {
+      "name": "job",
+      "size": 8,
+      "slice_size": 16,
+      "priority": 5
+    }
+  ],
+  "op": "fits_ignoring_topology",
+  "gang": "job",
+  "expect": true
+}

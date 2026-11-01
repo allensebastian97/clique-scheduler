@@ -1,0 +1,144 @@
+{
+  "description": "random fragmented cluster, seed 0",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 17,
+    "B": 16,
+    "C": 17,
+    "D": 18,
+    "E": 17
+  },
+  "unhealthy": [
+    "C05",
+    "C12",
+    "D11"
+  ],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 1,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "A08"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "A07",
+        "A11"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "D12",
+        "D00",
+        "D02",
+        "D04",
+        "D06"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 3,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "E12",
+        "E07",
+        "E15"
+      ]
+    },
+    {
+      "name": "g4",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "E11",
+        "E16",
+        "E04",
+        "E01",
+        "E08",
+        "E00"
+      ]
+    },
+    {
+      "name": "g5",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 5,
+      "nodes": [
+        "C13",
+        "C09",
+        "C01",
+        "C04",
+        "C11"
+      ]
+    },
+    {
+      "name": "g6",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 5,
+      "nodes": [
+        "C16",
+        "C06",
+        "C15",
+        "C00",
+        "C02",
+        "C08"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 20,
+      "slice_size": 8,
+      "priority": 5
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "D01",
+      "ns/job-1": "D03",
+      "ns/job-10": "A02",
+      "ns/job-11": "A03",
+      "ns/job-12": "A04",
+      "ns/job-13": "A05",
+      "ns/job-14": "A06",
+      "ns/job-15": "A09",
+      "ns/job-16": "C03",
+      "ns/job-17": "C07",
+      "ns/job-18": "C10",
+      "ns/job-19": "C14",
+      "ns/job-2": "D05",
+      "ns/job-3": "D07",
+      "ns/job-4": "D08",
+      "ns/job-5": "D09",
+      "ns/job-6": "D10",
+      "ns/job-7": "D13",
+      "ns/job-8": "A00",
+      "ns/job-9": "A01"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

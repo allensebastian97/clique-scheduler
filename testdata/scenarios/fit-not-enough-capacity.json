@@ -1,0 +1,41 @@
+{
+  "description": "29 nodes needed, 28 free: a capacity problem, not fragmentation.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 18
+  },
+  "gangs": [
+    {
+      "name": "a",
+      "size": 4,
+      "slice_size": 16,
+      "nodes": [
+        "A00",
+        "A01",
+        "A02",
+        "A03"
+      ]
+    },
+    {
+      "name": "b",
+      "size": 4,
+      "slice_size": 16,
+      "nodes": [
+        "B00",
+        "B01",
+        "B02",
+        "B03"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 29,
+      "slice_size": 16
+    }
+  ],
+  "op": "fits_ignoring_topology",
+  "gang": "job",
+  "expect": false
+}

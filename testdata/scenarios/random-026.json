@@ -1,0 +1,34 @@
+{
+  "description": "random fragmented cluster, seed 26",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 16,
+    "C": 17
+  },
+  "unhealthy": [],
+  "gangs": [
+    {
+      "name": "job",
+      "size": 4,
+      "slice_size": 4,
+      "priority": 0,
+      "nodes": [
+        null,
+        "A01",
+        "A02",
+        "A03"
+      ]
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "A00"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

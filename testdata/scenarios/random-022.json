@@ -1,0 +1,80 @@
+{
+  "description": "random fragmented cluster, seed 22",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 16,
+    "B": 16,
+    "C": 18
+  },
+  "unhealthy": [
+    "A07",
+    "A11",
+    "C12"
+  ],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 3,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "C00",
+        "C09",
+        "C16"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "A08",
+        "A00",
+        "A15",
+        "A04",
+        "A02",
+        "A10"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 5,
+      "nodes": [
+        "C13",
+        "C10",
+        "C14",
+        "C02"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "C04",
+        "C01",
+        "C03",
+        "C07",
+        "C06"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 2,
+      "slice_size": 4,
+      "priority": 5
+    }
+  ],
+  "op": "fits_ignoring_topology",
+  "gang": "job",
+  "expect": true
+}

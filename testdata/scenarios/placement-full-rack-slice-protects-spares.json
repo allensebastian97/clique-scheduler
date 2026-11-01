@@ -1,0 +1,22 @@
+{
+  "description": "An 18-node slice may not consume the spares.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18
+  },
+  "gangs": [
+    {
+      "name": "job",
+      "size": 18,
+      "slice_size": 18
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {},
+    "stuck_slices": [],
+    "blocked": true
+  }
+}
