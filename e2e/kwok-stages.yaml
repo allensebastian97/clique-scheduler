@@ -1,0 +1,430 @@
+# KWOK v0.8.0's default stages minus pod-complete, so Job pods keep running
+# until deleted instead of finishing after a second.
+---
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: node-initialize
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Node
+  selector:
+    matchExpressions:
+    - key: '.status.conditions.[] | select( .type == "Ready" ) | .status'
+      operator: 'NotIn'
+      values:
+      - 'True'
+  next:
+    statusTemplate: |
+      {{ $now := Now }}
+      {{ $lastTransitionTime := or .metadata.creationTimestamp $now }}
+      conditions:
+      {{ range NodeConditions }}
+      - lastHeartbeatTime: {{ $now | Quote }}
+        lastTransitionTime: {{ $lastTransitionTime | Quote }}
+        message: {{ .message | Quote }}
+        reason: {{ .reason | Quote }}
+        status: {{ .status | Quote }}
+        type: {{ .type  | Quote}}
+      {{ end }}
+
+      {{ $hasInternalIP := false }}
+      {{ $hasHostname := false }}
+      {{ range .status.addresses }}
+        {{ if eq .type "InternalIP" }}
+          {{ $hasInternalIP = true }}
+        {{ end }}
+        {{ if eq .type "Hostname" }}
+          {{ $hasHostname = true }}
+        {{ end }}
+      {{ end }}
+      {{ if or (not $hasInternalIP) (not $hasHostname) }}
+      addresses:
+      {{ end }}
+      {{ if not $hasInternalIP }}
+      {{ with NodeIP }}
+      - address: {{ . | Quote }}
+        type: InternalIP
+      {{ end }}
+      {{ end }}
+      {{ if not $hasHostname }}
+      {{ with NodeName }}
+      - address: {{ . | Quote }}
+        type: Hostname
+      {{ end }}
+      {{ end }}
+
+      {{ with NodePort }}
+      daemonEndpoints:
+        kubeletEndpoint:
+          Port: {{ . }}
+      {{ end }}
+
+      allocatable:
+      {{ with .status.allocatable }}
+      {{ YAML . 1 }}
+      {{ else }}
+        cpu: 1k
+        memory: 1Ti
+        pods: 1M
+      {{ end }}
+      capacity:
+      {{ with .status.capacity }}
+      {{ YAML . 1 }}
+      {{ else }}
+        cpu: 1k
+        memory: 1Ti
+        pods: 1M
+      {{ end }}
+
+      {{ $nodeInfo := .status.nodeInfo }}
+      {{ $kwokVersion := printf "kwok-%s" Version }}
+      nodeInfo:
+        architecture: {{ or $nodeInfo.architecture "amd64" }}
+        bootID: {{ or $nodeInfo.bootID `""` }}
+        containerRuntimeVersion: {{ or $nodeInfo.containerRuntimeVersion $kwokVersion }}
+        kernelVersion: {{ or $nodeInfo.kernelVersion $kwokVersion }}
+        kubeProxyVersion: {{ or $nodeInfo.kubeProxyVersion $kwokVersion }}
+        kubeletVersion: {{ or $nodeInfo.kubeletVersion $kwokVersion }}
+        machineID: {{ or $nodeInfo.machineID `""` }}
+        operatingSystem: {{ or $nodeInfo.operatingSystem "linux" }}
+        osImage: {{ or $nodeInfo.osImage `""` }}
+        systemUUID: {{ or $nodeInfo.systemUUID `""` }}
+      phase: Running
+---
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: pod-create
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Pod
+  selector:
+    matchExpressions:
+    - key: '.metadata.deletionTimestamp'
+      operator: 'DoesNotExist'
+    - key: '.status.podIP'
+      operator: 'DoesNotExist'
+  weight: 1
+  weightFrom:
+    expressionFrom: '.metadata.annotations["pod-create.stage.kwok.x-k8s.io/weight"]'
+  delay:
+    durationMilliseconds: 1000
+    durationFrom:
+      expressionFrom: '.metadata.annotations["pod-create.stage.kwok.x-k8s.io/delay"]'
+    jitterDurationMilliseconds: 5000
+    jitterDurationFrom:
+      expressionFrom: '.metadata.annotations["pod-create.stage.kwok.x-k8s.io/jitter-delay"]'
+  next:
+    event:
+      type: Normal
+      reason: Created
+      message: Created container
+    statusTemplate: |
+      {{ $now := Now }}
+
+      conditions:
+      {{ if .spec.initContainers }}
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        message: 'containers with incomplete status: [{{ range .spec.initContainers }} {{ .name }} {{ end }}]'
+        reason: ContainersNotInitialized
+        status: "False"
+        type: Initialized
+      {{ else }}
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        status: "True"
+        type: Initialized
+      {{ end }}
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        message: 'containers with unready status: [{{ range .spec.containers }} {{ .name }} {{ end }}]'
+        reason: ContainersNotReady
+        status: "False"
+        type: Ready
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        message: 'containers with unready status: [{{ range .spec.containers }} {{ .name }} {{ end }}]'
+        reason: ContainersNotReady
+        status: "False"
+        type: ContainersReady
+      {{ range .spec.readinessGates }}
+      - lastTransitionTime: {{ $now | Quote }}
+        status: "True"
+        type: {{ .conditionType | Quote }}
+      {{ end }}
+
+      {{ if .spec.initContainers }}
+      initContainerStatuses:
+      {{ range .spec.initContainers }}
+      - image: {{ .image | Quote }}
+        name: {{ .name | Quote }}
+        ready: false
+        restartCount: 0
+        started: false
+        state:
+          waiting:
+            reason: PodInitializing
+      {{ end }}
+      containerStatuses:
+      {{ range .spec.containers }}
+      - image: {{ .image | Quote }}
+        name: {{ .name | Quote }}
+        ready: false
+        restartCount: 0
+        started: false
+        state:
+          waiting:
+            reason: PodInitializing
+      {{ end }}
+      {{ else }}
+      containerStatuses:
+      {{ range .spec.containers }}
+      - image: {{ .image | Quote }}
+        name: {{ .name | Quote }}
+        ready: false
+        restartCount: 0
+        started: false
+        state:
+          waiting:
+            reason: ContainerCreating
+      {{ end }}
+      {{ end }}
+
+      hostIP: {{ NodeIPWith .spec.nodeName | Quote }}
+      podIP: {{ PodIPWith .spec.nodeName ( or .spec.hostNetwork false ) ( or .metadata.uid "" ) ( or .metadata.name "" ) ( or .metadata.namespace "" ) | Quote }}
+      phase: Pending
+---
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: pod-init-container-running
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Pod
+  selector:
+    matchExpressions:
+    - key: '.metadata.deletionTimestamp'
+      operator: 'DoesNotExist'
+    - key: '.status.phase'
+      operator: 'In'
+      values:
+      - 'Pending'
+    - key: '.status.conditions.[] | select( .type == "Initialized" ) | .status'
+      operator: 'NotIn'
+      values:
+      - 'True'
+    - key: '.status.initContainerStatuses.[].state.waiting.reason'
+      operator: 'Exists'
+  weight: 1
+  weightFrom:
+    expressionFrom: '.metadata.annotations["pod-init-container-running.stage.kwok.x-k8s.io/weight"]'
+  delay:
+    durationMilliseconds: 1000
+    durationFrom:
+      expressionFrom: '.metadata.annotations["pod-init-container-running.stage.kwok.x-k8s.io/delay"]'
+    jitterDurationMilliseconds: 5000
+    jitterDurationFrom:
+      expressionFrom: '.metadata.annotations["pod-init-container-running.stage.kwok.x-k8s.io/jitter-delay"]'
+  next:
+    statusTemplate: |
+      {{ $now := Now }}
+      {{ $root := . }}
+      initContainerStatuses:
+      {{ range $index, $item := .spec.initContainers }}
+      {{ $origin := index $root.status.initContainerStatuses $index }}
+      - image: {{ $item.image | Quote }}
+        name: {{ $item.name | Quote }}
+        ready: true
+        restartCount: 0
+        started: true
+        state:
+          running:
+            startedAt: {{ $now | Quote }}
+      {{ end }}
+---
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: pod-init-container-completed
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Pod
+  selector:
+    matchExpressions:
+    - key: '.metadata.deletionTimestamp'
+      operator: 'DoesNotExist'
+    - key: '.status.phase'
+      operator: 'In'
+      values:
+      - 'Pending'
+    - key: '.status.initContainerStatuses.[].state.running.startedAt'
+      operator: 'Exists'
+  weight: 1
+  weightFrom:
+    expressionFrom: '.metadata.annotations["pod-init-container-completed.stage.kwok.x-k8s.io/weight"]'
+  delay:
+    durationMilliseconds: 1000
+    durationFrom:
+      expressionFrom: '.metadata.annotations["pod-init-container-completed.stage.kwok.x-k8s.io/delay"]'
+    jitterDurationMilliseconds: 5000
+    jitterDurationFrom:
+      expressionFrom: '.metadata.annotations["pod-init-container-completed.stage.kwok.x-k8s.io/jitter-delay"]'
+  next:
+    statusTemplate: |
+      {{ $now := Now }}
+      {{ $root := . }}
+      conditions:
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        status: "True"
+        reason: ""
+        type: Initialized
+      initContainerStatuses:
+      {{ range $index, $item := .spec.initContainers }}
+      {{ $origin := index $root.status.initContainerStatuses $index }}
+      - image: {{ $item.image | Quote }}
+        name: {{ $item.name | Quote }}
+        ready: true
+        restartCount: 0
+        started: false
+        state:
+          terminated:
+            exitCode: 0
+            finishedAt: {{ $now | Quote }}
+            reason: Completed
+            startedAt: {{ $now | Quote }}
+      {{ end }}
+      containerStatuses:
+      {{ range .spec.containers }}
+      - image: {{ .image | Quote }}
+        name: {{ .name | Quote }}
+        ready: false
+        restartCount: 0
+        started: false
+        state:
+          waiting:
+            reason: ContainerCreating
+      {{ end }}
+---
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: pod-ready
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Pod
+  selector:
+    matchExpressions:
+    - key: '.metadata.deletionTimestamp'
+      operator: 'DoesNotExist'
+    - key: '.status.phase'
+      operator: 'In'
+      values:
+      - 'Pending'
+    - key: '.status.conditions.[] | select( .type == "Initialized" ) | .status'
+      operator: 'In'
+      values:
+      - 'True'
+    - key: '.status.containerStatuses.[].state.running.startedAt'
+      operator: 'DoesNotExist'
+  weight: 1
+  weightFrom:
+    expressionFrom: '.metadata.annotations["pod-ready.stage.kwok.x-k8s.io/weight"]'
+  delay:
+    durationMilliseconds: 1000
+    durationFrom:
+      expressionFrom: '.metadata.annotations["pod-ready.stage.kwok.x-k8s.io/delay"]'
+    jitterDurationMilliseconds: 5000
+    jitterDurationFrom:
+      expressionFrom: '.metadata.annotations["pod-ready.stage.kwok.x-k8s.io/jitter-delay"]'
+  next:
+    delete: false
+    statusTemplate: |
+      {{ $now := Now }}
+      {{ $root := . }}
+      conditions:
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        message: ''
+        reason: ''
+        status: "True"
+        type: Ready
+      - lastProbeTime: null
+        lastTransitionTime: {{ $now | Quote }}
+        message: ''
+        reason: ''
+        status: "True"
+        type: ContainersReady
+      containerStatuses:
+      {{ range $index, $item := .spec.containers }}
+      {{ $origin := index $root.status.containerStatuses $index }}
+      - image: {{ $item.image | Quote }}
+        name: {{ $item.name | Quote }}
+        ready: true
+        restartCount: 0
+        started: true
+        state:
+          running:
+            startedAt: {{ $now | Quote }}
+      {{ end }}
+      phase: Running
+      startTime: {{ $now | Quote }}
+---
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: pod-delete
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Pod
+  selector:
+    matchExpressions:
+    - key: '.metadata.deletionTimestamp'
+      operator: 'Exists'
+    - key: '.metadata.finalizers'
+      operator: 'DoesNotExist'
+  weight: 1
+  weightFrom:
+    expressionFrom: '.metadata.annotations["pod-delete.stage.kwok.x-k8s.io/weight"]'
+  delay:
+    durationMilliseconds: 1000
+    durationFrom:
+      expressionFrom: '.metadata.annotations["pod-delete.stage.kwok.x-k8s.io/delay"]'
+    jitterDurationFrom:
+      expressionFrom: '.metadata.deletionTimestamp'
+  next:
+    delete: true
+---
+# Added: like a kubelet, move a deleted pod to a terminal phase so controllers
+# that wait for one (the Job controller with podFailurePolicy) drop their
+# finalizers and pod-delete can finish.
+apiVersion: kwok.x-k8s.io/v1alpha1
+kind: Stage
+metadata:
+  name: pod-terminate
+spec:
+  resourceRef:
+    apiGroup: v1
+    kind: Pod
+  selector:
+    matchExpressions:
+    - key: '.metadata.deletionTimestamp'
+      operator: 'Exists'
+    - key: '.status.phase'
+      operator: 'In'
+      values:
+      - 'Pending'
+      - 'Running'
+  delay:
+    durationMilliseconds: 1000
+  next:
+    statusTemplate: |
+      phase: Failed

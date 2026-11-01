@@ -1,0 +1,62 @@
+# 32 nodes x 4 GPUs = 128 GPUs, placed as two 16-node slices on two NVL72 racks.
+# Ranks come from the Indexed Job's completion index, so ranks 0-15 share one
+# rack and ranks 16-31 another; a replacement pod for index i rejoins its
+# slice's rack.
+#
+# Multi-node NVLink also needs IMEX set up for the pods (e.g. an NVIDIA DRA
+# ComputeDomain per slice); this scheduler only decides placement.
+apiVersion: v1
+kind: Service
+metadata:
+  name: train
+spec:
+  clusterIP: None
+  selector:
+    cliquesched.io/gang: train
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: train
+spec:
+  completionMode: Indexed
+  completions: 32
+  parallelism: 32
+  backoffLimit: 32
+  # Wait for a failed pod to finish terminating before replacing it, so two
+  # pods never hold the same rank at once (Kubernetes 1.29+).
+  podReplacementPolicy: Failed
+  # Defrag and slice migration evict pods; don't count that as a failure
+  # (no backoffLimit charge, no backoff delay before the pod is recreated).
+  podFailurePolicy:
+    rules:
+    - action: Ignore
+      onPodConditions:
+      - type: DisruptionTarget
+  template:
+    metadata:
+      labels:
+        cliquesched.io/gang: train
+      annotations:
+        cliquesched.io/gang-size: "32"
+        cliquesched.io/slice-size: "16"
+        # Restarts from checkpoints, so defrag may move it.
+        cliquesched.io/preemptible: "true"
+    spec:
+      schedulerName: clique-scheduler
+      subdomain: train
+      restartPolicy: Never
+      containers:
+      - name: trainer
+        image: nvcr.io/nvidia/pytorch:25.01-py3
+        command:
+        - torchrun
+        - --nnodes=32
+        - --nproc-per-node=4
+        - --node-rank=$(JOB_COMPLETION_INDEX)
+        - --master-addr=train-0.train
+        - --master-port=29500
+        - train.py
+        resources:
+          limits:
+            nvidia.com/gpu: 4

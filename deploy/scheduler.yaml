@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clique-scheduler
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: clique-scheduler
+  namespace: clique-scheduler
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clique-scheduler
+rules:
+- apiGroups: [""]
+  resources: [nodes, pods]
+  verbs: [get, list, watch]
+- apiGroups: [""]
+  resources: [pods/binding]
+  verbs: [create]
+# Only needed with --defrag=on or --migrate-slices.
+- apiGroups: [""]
+  resources: [pods/eviction]
+  verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: clique-scheduler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: clique-scheduler
+subjects:
+- kind: ServiceAccount
+  name: clique-scheduler
+  namespace: clique-scheduler
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clique-scheduler
+  namespace: clique-scheduler
+spec:
+  # Exactly one replica: there is no leader election, and two schedulers
+  # would plan against the same free capacity.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: {app: clique-scheduler}
+  template:
+    metadata:
+      labels: {app: clique-scheduler}
+    spec:
+      serviceAccountName: clique-scheduler
+      containers:
+      - name: scheduler
+        image: clique-scheduler:0.1.0  # docker build -t clique-scheduler:0.1.0 .
+        args:
+        - --slice-size=16
+        - --reserve=2
+        - --defrag=dry-run  # switch to "on" once the dry-run log looks right
+        resources:
+          requests: {cpu: 500m, memory: 256Mi}
