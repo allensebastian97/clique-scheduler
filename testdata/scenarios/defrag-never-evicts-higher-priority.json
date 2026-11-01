@@ -1,0 +1,54 @@
+{
+  "description": "Victims outrank the blocked gang: no plan.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 18
+  },
+  "gangs": [
+    {
+      "name": "small-a",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "nodes": [
+        "A00",
+        "A01",
+        "A02",
+        "A03"
+      ],
+      "priority": 10
+    },
+    {
+      "name": "small-b",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": true,
+      "nodes": [
+        "B00",
+        "B01"
+      ],
+      "priority": 10
+    },
+    {
+      "name": "pinned",
+      "size": 2,
+      "slice_size": 16,
+      "nodes": [
+        "B02",
+        "B03"
+      ],
+      "priority": 10
+    },
+    {
+      "name": "job",
+      "size": 16,
+      "slice_size": 16,
+      "priority": 5
+    }
+  ],
+  "op": "plan_defrag",
+  "gang": "job",
+  "expect": null
+}

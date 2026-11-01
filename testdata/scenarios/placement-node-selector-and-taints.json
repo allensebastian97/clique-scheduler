@@ -1,0 +1,45 @@
+{
+  "description": "nodeSelector restricts to labelled nodes; a NoSchedule taint blocks A00.",
+  "reserve": 0,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18
+  },
+  "labels": {
+    "A01": {
+      "pool": "train"
+    },
+    "A02": {
+      "pool": "train"
+    }
+  },
+  "taints": {
+    "A00": [
+      {
+        "key": "maintenance",
+        "value": "yes",
+        "effect": "NoSchedule"
+      }
+    ]
+  },
+  "gangs": [
+    {
+      "name": "job",
+      "size": 2,
+      "slice_size": 16,
+      "node_selector": {
+        "pool": "train"
+      }
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "A01",
+      "ns/job-1": "A02"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "description": "random fragmented cluster, seed 24",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 16,
+    "C": 16,
+    "D": 16,
+    "E": 16
+  },
+  "unhealthy": [
+    "A11"
+  ],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "C13",
+        "C10"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "C04",
+        "C00",
+        "C07",
+        "C15",
+        "C12",
+        "C11"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 1,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "A00"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 5,
+      "nodes": [
+        "D06",
+        "D12",
+        "D00",
+        "D02"
+      ]
+    },
+    {
+      "name": "g4",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "D01",
+        "D04",
+        "D05",
+        "D11",
+        "D03"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 16,
+      "slice_size": 8,
+      "priority": 5
+    }
+  ],
+  "op": "plan_defrag",
+  "gang": "job",
+  "expect": {
+    "victims": [],
+    "gpus": 0,
+    "assignment": {
+      "ns/job-0": "A01",
+      "ns/job-1": "A02",
+      "ns/job-10": "B02",
+      "ns/job-11": "B03",
+      "ns/job-12": "B04",
+      "ns/job-13": "B05",
+      "ns/job-14": "B06",
+      "ns/job-15": "B07",
+      "ns/job-2": "A03",
+      "ns/job-3": "A04",
+      "ns/job-4": "A05",
+      "ns/job-5": "A06",
+      "ns/job-6": "A07",
+      "ns/job-7": "A08",
+      "ns/job-8": "B00",
+      "ns/job-9": "B01"
+    }
+  }
+}

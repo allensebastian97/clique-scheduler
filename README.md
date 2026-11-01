@@ -1,8 +1,9 @@
-# clique-scheduler
+# nvlink-rack-scheduler
 
-A Kubernetes secondary scheduler that places multi-node GPU jobs along
-NVLink domains (GB200/GB300 NVL72 racks). It is an open-source take on
-the topology-aware scheduling, spare-node recovery and defragmentation that
+Open-source placement policy for multi-node GPU jobs on NVLink rack-scale
+systems (GB200/GB300 NVL72), with integrations for the schedulers GPU clouds
+already run. It is an open take on the topology-aware scheduling, spare-node
+recovery and defragmentation that
 [SkyPilot describes](https://skypilot.ai/blog/grace-blackwell-needs-a-new-scheduler)
 for its closed Platform.
 
@@ -15,6 +16,10 @@ often (about every 5 hours somewhere on a 128-rack cluster), so a job that
 needs all 18 nodes of a rack is fragile.
 
 ## Policy
+
+A **clique** is NVIDIA's name for a set of GPUs sharing one NVLink domain; on
+NVL72 it is one rack. The code and node label (`nvidia.com/gpu.clique`) use
+that term, and "rack" means the same thing here.
 
 * **Slices.** A gang is cut into slices of `slice-size` consecutive ranks
   (default 16 nodes = 64 GPUs). Each slice lands entirely inside one NVLink
@@ -44,80 +49,37 @@ The scheduler keeps almost no state. A slice's rack is read back from where
 its pods run, and a pod's slice from its rank, so restarts are safe. Only
 in-flight defrag holds live in memory.
 
-## Usage
+## Layout
 
-Label a workload's pods:
-
-| Field | Required | Meaning |
+| Path | What | Status |
 |---|---|---|
-| `spec.schedulerName: clique-scheduler` | yes | Opt in to this scheduler |
-| label `cliquesched.io/gang` | yes | Gang name (per namespace) |
-| annotation `cliquesched.io/gang-size` | yes | Number of pods in the gang |
-| annotation `cliquesched.io/slice-size` | no | Ranks per rack (default `--slice-size`) |
-| annotation `cliquesched.io/preemptible: "true"` | no | Restart-safe: defrag may evict it |
-| rank | yes | Indexed Job completion index, StatefulSet pod index, or annotation `cliquesched.io/rank` |
+| `pkg/policy/` | The policy in Go, no scheduler dependencies. Every integration builds on it. | Done; matches the reference on all shared scenarios |
+| `testdata/scenarios/` | Shared scenarios: cluster state + operation + expected result. The contract every implementation must meet. | 18 hand-written, 40 randomized |
+| `reference/python/` | Reference implementation, a standalone Kubernetes scheduler, and a KWOK end-to-end suite | Working; see its [README](reference/python/README.md) |
+| KAI Scheduler plugin | Spares and same-clique replacement on top of KAI's topology segments and consolidation | Planned |
+| Kubernetes scheduler-framework plugin | Same policy for clusters running the stock kube-scheduler | Planned |
+| Slurm daemon | Defrag and replacement around Slurm's `topology/block` and `--segment` | Planned |
 
-See `examples/indexed-job.yaml`. Deploy:
+## Shared scenarios
 
-```bash
-docker build -t clique-scheduler:0.1.0 .
-kubectl apply -f deploy/scheduler.yaml
-```
-
-Flags: `--slice-size`, `--reserve`, `--defrag=off|dry-run|on`,
-`--migrate-slices`, `--clique-label`, `--cooldown`, `--interval`, `--once`.
-
-## Development
+The Python implementation is the reference. Each file in `testdata/scenarios/`
+records a cluster, an operation (`plan_gang`, `plan_defrag`,
+`fits_ignoring_topology`) and the reference's exact result, down to which node
+each pod lands on. Every implementation runs the same files:
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -e '.[test]'
-.venv/bin/python -m pytest
+go test ./pkg/policy/                                   # Go
+cd reference/python && python -m pytest tests/test_scenarios.py   # Python
 ```
 
-The planner (`placement.py`, `defrag.py`) works on plain dataclasses and has
-no Kubernetes dependency. `k8s.py` translates API JSON into that model, and
-`scheduler.py` is the loop. `tests/test_scheduler.py` drives the loop against
-an in-memory fake API.
-
-### End-to-end on a laptop, no GPUs
-
-[KWOK](https://kwok.sigs.k8s.io/) runs a real API server, controller manager
-and Job controller with fake nodes. `e2e/run.py` builds 4 racks x 18 nodes x
-4 GPUs and checks slicing, spare protection, same-rack recovery after a node
-failure (with a freshly restarted scheduler), and defrag:
+After an intentional policy change, regenerate the expectations from the
+reference and review the diff:
 
 ```bash
-brew install kwok kubectl
-kwokctl create cluster --name clique --runtime binary --config e2e/kwok-stages.yaml
-kwokctl get kubeconfig --name clique > /tmp/clique.kubeconfig
-KUBECONFIG=/tmp/clique.kubeconfig .venv/bin/python e2e/run.py   # ~5 minutes
-kwokctl delete cluster --name clique
+cd reference/python && python tools/scenarios.py --update
 ```
 
-`e2e/kwok-stages.yaml` is KWOK's default pod lifecycle with two changes. Job
-pods keep running instead of completing after a second, and deleted pods go
-to `Failed` the way a kubelet would move them.
-
-## Limitations
-
-* **Not yet run on real GPU nodes.** It has been tested against a real
-  control plane (KWOK) with fake nodes, which doesn't cover GPU Operator
-  labelling, IMEX, or real kubelet timing.
-* One replica, no leader election. It polls rather than watches, which is
-  fine for thousands of nodes but not tuned beyond that. Planning a 128-node
-  gang on a 2,304-node cluster takes about 0.16 s.
-* Node health is `Ready` and not cordoned. Faster GPU fault detection (DCGM,
-  XID errors) should taint or cordon nodes; this scheduler reacts to that.
-* It only does placement. IMEX / ComputeDomain setup for multi-node NVLink
-  is still needed (see NVIDIA's DRA driver).
-* Fit checks cover resource requests, `nodeSelector` and taints. They don't
-  cover affinity, topology spread or volume topology.
-* No queueing beyond priority then age, and no capacity reservation for
-  blocked gangs. Smaller gangs can backfill past a blocked big one; defrag is
-  the remedy.
-* Placement and defrag are greedy, not optimal.
-* Recovering a replaced pod into a running job (re-forming NCCL groups) is
-  up to the training framework (e.g. torchrun elastic, Ray, TorchFT).
+`--random N` regenerates the randomized fragmented-cluster scenarios.
 
 ## License
 

@@ -1,0 +1,49 @@
+{
+  "description": "A small gang avoids a full slice's spares and goes to the other clique.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 18
+  },
+  "gangs": [
+    {
+      "name": "big",
+      "size": 16,
+      "slice_size": 16,
+      "nodes": [
+        "A00",
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 2,
+      "slice_size": 16
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "B00",
+      "ns/job-1": "B01"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

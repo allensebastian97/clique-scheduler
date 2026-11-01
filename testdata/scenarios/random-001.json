@@ -1,0 +1,121 @@
+{
+  "description": "random fragmented cluster, seed 1",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 16,
+    "C": 17
+  },
+  "unhealthy": [],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 6,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "C05",
+        "C08",
+        "C06",
+        "C02",
+        "C00",
+        "C10"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "C01",
+        "C13",
+        "C03",
+        "C12",
+        "C09"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "B07",
+        "B04",
+        "B05",
+        "B00",
+        "B01"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "C15",
+        "C04",
+        "C11",
+        "C16"
+      ]
+    },
+    {
+      "name": "g4",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "C07",
+        "C14"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 20,
+      "slice_size": 8,
+      "priority": 5,
+      "nodes": [
+        "A00",
+        "A01",
+        "A02",
+        null,
+        "A04",
+        null,
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        null,
+        null,
+        "A13",
+        "A14",
+        "A15",
+        null,
+        "A17",
+        "B02",
+        "B03"
+      ]
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-11": "A11",
+      "ns/job-12": "A12",
+      "ns/job-16": "B06",
+      "ns/job-3": "A03",
+      "ns/job-5": "A05"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

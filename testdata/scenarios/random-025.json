@@ -1,0 +1,115 @@
+{
+  "description": "random fragmented cluster, seed 25",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 16,
+    "B": 16,
+    "C": 17,
+    "D": 18,
+    "E": 17
+  },
+  "unhealthy": [],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 3,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "C01",
+        "C12",
+        "C15"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "D13",
+        "D00",
+        "D01",
+        "D10"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "A06",
+        "A09",
+        "A07",
+        "A00",
+        "A01"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "C16",
+        "C10",
+        "C06",
+        "C09"
+      ]
+    },
+    {
+      "name": "g4",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "E12",
+        "E04",
+        "E09",
+        "E00",
+        "E13"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 20,
+      "slice_size": 4,
+      "priority": 5
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "C00",
+      "ns/job-1": "C02",
+      "ns/job-10": "A04",
+      "ns/job-11": "A05",
+      "ns/job-12": "A08",
+      "ns/job-13": "A10",
+      "ns/job-14": "A11",
+      "ns/job-15": "A12",
+      "ns/job-16": "E01",
+      "ns/job-17": "E02",
+      "ns/job-18": "E03",
+      "ns/job-19": "E05",
+      "ns/job-2": "C03",
+      "ns/job-3": "C04",
+      "ns/job-4": "C05",
+      "ns/job-5": "C07",
+      "ns/job-6": "C08",
+      "ns/job-7": "C11",
+      "ns/job-8": "A02",
+      "ns/job-9": "A03"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

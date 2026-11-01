@@ -1,0 +1,56 @@
+{
+  "description": "32 ranks become two 16-node slices on two cliques, each keeping 2 spares.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 18
+  },
+  "gangs": [
+    {
+      "name": "job",
+      "size": 32,
+      "slice_size": 16
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "A00",
+      "ns/job-1": "A01",
+      "ns/job-10": "A10",
+      "ns/job-11": "A11",
+      "ns/job-12": "A12",
+      "ns/job-13": "A13",
+      "ns/job-14": "A14",
+      "ns/job-15": "A15",
+      "ns/job-16": "B00",
+      "ns/job-17": "B01",
+      "ns/job-18": "B02",
+      "ns/job-19": "B03",
+      "ns/job-2": "A02",
+      "ns/job-20": "B04",
+      "ns/job-21": "B05",
+      "ns/job-22": "B06",
+      "ns/job-23": "B07",
+      "ns/job-24": "B08",
+      "ns/job-25": "B09",
+      "ns/job-26": "B10",
+      "ns/job-27": "B11",
+      "ns/job-28": "B12",
+      "ns/job-29": "B13",
+      "ns/job-3": "A03",
+      "ns/job-30": "B14",
+      "ns/job-31": "B15",
+      "ns/job-4": "A04",
+      "ns/job-5": "A05",
+      "ns/job-6": "A06",
+      "ns/job-7": "A07",
+      "ns/job-8": "A08",
+      "ns/job-9": "A09"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

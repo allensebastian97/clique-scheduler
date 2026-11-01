@@ -1,0 +1,30 @@
+{
+  "description": "Evicting the only other gang leaves it nowhere to go: no plan.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18
+  },
+  "gangs": [
+    {
+      "name": "small",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "nodes": [
+        "A00",
+        "A01",
+        "A02",
+        "A03"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 16,
+      "slice_size": 16
+    }
+  ],
+  "op": "plan_defrag",
+  "gang": "job",
+  "expect": null
+}

@@ -1,0 +1,152 @@
+{
+  "description": "random fragmented cluster, seed 6",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 16,
+    "B": 17,
+    "C": 17,
+    "D": 16,
+    "E": 16,
+    "F": 16
+  },
+  "unhealthy": [
+    "C14",
+    "D10",
+    "E09",
+    "F12",
+    "F15"
+  ],
+  "gangs": [
+    {
+      "name": "g0",
+      "size": 1,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "E10"
+      ]
+    },
+    {
+      "name": "g1",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 5,
+      "nodes": [
+        "D00",
+        "D01",
+        "D06",
+        "D08"
+      ]
+    },
+    {
+      "name": "g2",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "D15",
+        "D13",
+        "D12",
+        "D02"
+      ]
+    },
+    {
+      "name": "g3",
+      "size": 1,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "B02"
+      ]
+    },
+    {
+      "name": "g4",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "D09",
+        "D04",
+        "D11",
+        "D07"
+      ]
+    },
+    {
+      "name": "g5",
+      "size": 1,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "A13"
+      ]
+    },
+    {
+      "name": "g6",
+      "size": 5,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 5,
+      "nodes": [
+        "C16",
+        "C02",
+        "C12",
+        "C15",
+        "C06"
+      ]
+    },
+    {
+      "name": "g7",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "C10",
+        "C05",
+        "C11",
+        "C08"
+      ]
+    },
+    {
+      "name": "g10",
+      "size": 3,
+      "slice_size": 16,
+      "preemptible": true,
+      "priority": 0,
+      "nodes": [
+        "E07",
+        "E01",
+        "E14"
+      ]
+    },
+    {
+      "name": "g11",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": false,
+      "priority": 0,
+      "nodes": [
+        "B12",
+        "B05",
+        "B15",
+        "B04"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 48,
+      "slice_size": 16,
+      "priority": 5
+    }
+  ],
+  "op": "plan_defrag",
+  "gang": "job",
+  "expect": null
+}

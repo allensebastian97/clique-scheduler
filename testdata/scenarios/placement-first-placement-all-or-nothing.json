@@ -1,0 +1,23 @@
+{
+  "description": "3 slices, 2 cliques: nothing is placed.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 18
+  },
+  "gangs": [
+    {
+      "name": "job",
+      "size": 48,
+      "slice_size": 16
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {},
+    "stuck_slices": [],
+    "blocked": true
+  }
+}

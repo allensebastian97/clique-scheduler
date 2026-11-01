@@ -1,0 +1,41 @@
+{
+  "description": "With reserve 0 the same 18-node slice fits.",
+  "reserve": 0,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18
+  },
+  "gangs": [
+    {
+      "name": "job",
+      "size": 18,
+      "slice_size": 18
+    }
+  ],
+  "op": "plan_gang",
+  "gang": "job",
+  "expect": {
+    "assignment": {
+      "ns/job-0": "A00",
+      "ns/job-1": "A01",
+      "ns/job-10": "A10",
+      "ns/job-11": "A11",
+      "ns/job-12": "A12",
+      "ns/job-13": "A13",
+      "ns/job-14": "A14",
+      "ns/job-15": "A15",
+      "ns/job-16": "A16",
+      "ns/job-17": "A17",
+      "ns/job-2": "A02",
+      "ns/job-3": "A03",
+      "ns/job-4": "A04",
+      "ns/job-5": "A05",
+      "ns/job-6": "A06",
+      "ns/job-7": "A07",
+      "ns/job-8": "A08",
+      "ns/job-9": "A09"
+    },
+    "stuck_slices": [],
+    "blocked": false
+  }
+}

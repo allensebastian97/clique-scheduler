@@ -1,0 +1,73 @@
+{
+  "description": "Evicting small-a frees clique A; small-a can land again on B.",
+  "reserve": 2,
+  "gpus_per_node": 4,
+  "cliques": {
+    "A": 18,
+    "B": 18
+  },
+  "gangs": [
+    {
+      "name": "small-a",
+      "size": 4,
+      "slice_size": 16,
+      "preemptible": true,
+      "nodes": [
+        "A00",
+        "A01",
+        "A02",
+        "A03"
+      ]
+    },
+    {
+      "name": "small-b",
+      "size": 2,
+      "slice_size": 16,
+      "preemptible": true,
+      "nodes": [
+        "B00",
+        "B01"
+      ]
+    },
+    {
+      "name": "pinned",
+      "size": 2,
+      "slice_size": 16,
+      "nodes": [
+        "B02",
+        "B03"
+      ]
+    },
+    {
+      "name": "job",
+      "size": 16,
+      "slice_size": 16
+    }
+  ],
+  "op": "plan_defrag",
+  "gang": "job",
+  "expect": {
+    "victims": [
+      "ns/small-a"
+    ],
+    "gpus": 16.0,
+    "assignment": {
+      "ns/job-0": "A00",
+      "ns/job-1": "A01",
+      "ns/job-10": "A10",
+      "ns/job-11": "A11",
+      "ns/job-12": "A12",
+      "ns/job-13": "A13",
+      "ns/job-14": "A14",
+      "ns/job-15": "A15",
+      "ns/job-2": "A02",
+      "ns/job-3": "A03",
+      "ns/job-4": "A04",
+      "ns/job-5": "A05",
+      "ns/job-6": "A06",
+      "ns/job-7": "A07",
+      "ns/job-8": "A08",
+      "ns/job-9": "A09"
+    }
+  }
+}
