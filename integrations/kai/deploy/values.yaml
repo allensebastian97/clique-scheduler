@@ -1,0 +1,18 @@
+# KAI Scheduler Helm values that swap in the scheduler image with nvlinkrack
+# compiled in and enable the plugin. Use alongside your existing values:
+#
+#   helm upgrade kai-scheduler <kai-chart> -f your-values.yaml -f values.yaml
+#
+# Push the image into the same registry as the other KAI images
+# (global.registry), under the name "scheduler" and its own tag.
+scheduler:
+  image:
+    tag: v0.18-nvlinkrack  # the tag you pushed
+  plugins:
+    nvlinkrack:
+      enabled: true
+      # Below topology (500), so it runs after topology and sees its racks.
+      priority: 450
+      arguments:
+        spares: "2"
+        cliqueLabel: nvidia.com/gpu.clique
