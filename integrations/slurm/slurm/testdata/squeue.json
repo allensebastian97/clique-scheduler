@@ -1,0 +1,56 @@
+{
+ "jobs": [
+  {
+   "job_id": 5,
+   "name": "train",
+   "user_name": "allensebastian",
+   "job_state": [
+    "RUNNING"
+   ],
+   "state_reason": "None",
+   "nodes": "b2n[01-14,17-18],b3n[01-14,17-18]",
+   "node_count": {
+    "set": true,
+    "infinite": false,
+    "number": 32
+   },
+   "segment_size": 16,
+   "requeue": true,
+   "restart_cnt": 1,
+   "comment": "",
+   "priority": {
+    "set": true,
+    "infinite": false,
+    "number": 1
+   },
+   "resv_name": "nvlr-repl-5",
+   "excluded_nodes": "b1n[01-18]"
+  },
+  {
+   "job_id": 7,
+   "name": "small",
+   "user_name": "allensebastian",
+   "job_state": [
+    "RUNNING"
+   ],
+   "state_reason": "None",
+   "nodes": "b1n[01-02]",
+   "node_count": {
+    "set": true,
+    "infinite": false,
+    "number": 2
+   },
+   "segment_size": 0,
+   "requeue": true,
+   "restart_cnt": 0,
+   "comment": "",
+   "priority": {
+    "set": true,
+    "infinite": false,
+    "number": 1
+   },
+   "resv_name": "",
+   "excluded_nodes": ""
+  }
+ ]
+}

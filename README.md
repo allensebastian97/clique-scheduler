@@ -58,7 +58,7 @@ in-flight defrag holds live in memory.
 | `reference/python/` | Reference implementation, a standalone Kubernetes scheduler, and a KWOK end-to-end suite | Working; see its [README](reference/python/README.md) |
 | `integrations/kai/` | KAI Scheduler plugin: spares and same-rack replacement on top of KAI's topology segments and consolidation | Working: KAI's in-process tests, and a live test with KAI's scheduler and binder on KWOK; see its [README](integrations/kai/README.md) |
 | Kubernetes scheduler-framework plugin | Same policy for clusters running the stock kube-scheduler | Planned |
-| Slurm daemon | Defrag and replacement around Slurm's `topology/block` and `--segment` | Planned |
+| `integrations/slurm/` | Slurm daemon: spares, same-block replacement and defrag around `topology/block` and `--segment` | Working: unit tests, and a live test on a real Slurm 26.05 cluster; see its [README](integrations/slurm/README.md) |
 
 ## Shared scenarios
 

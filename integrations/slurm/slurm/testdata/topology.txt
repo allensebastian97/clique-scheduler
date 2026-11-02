@@ -1,0 +1,3 @@
+BlockName=b1 BlockIndex=0 Nodes=b1n[01-18] BlockSize=18
+BlockName=b2 BlockIndex=1 Nodes=b2n[01-18] BlockSize=18
+BlockName=b3 BlockIndex=2 Nodes=b3n[01-18] BlockSize=18

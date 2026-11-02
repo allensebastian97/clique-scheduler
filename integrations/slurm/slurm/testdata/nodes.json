@@ -1,0 +1,55 @@
+{
+ "nodes": [
+  {
+   "name": "b1n01",
+   "state": [
+    "ALLOCATED",
+    "RESERVED"
+   ],
+   "reason": "",
+   "reservation": "nvlr-hold-test"
+  },
+  {
+   "name": "b1n03",
+   "state": [
+    "IDLE"
+   ],
+   "reason": "",
+   "reservation": ""
+  },
+  {
+   "name": "b2n05",
+   "state": [
+    "ALLOCATED"
+   ],
+   "reason": "",
+   "reservation": ""
+  },
+  {
+   "name": "b2n15",
+   "state": [
+    "IDLE"
+   ],
+   "reason": "",
+   "reservation": ""
+  },
+  {
+   "name": "b2n17",
+   "state": [
+    "ALLOCATED",
+    "RESERVED"
+   ],
+   "reason": "",
+   "reservation": "nvlr-repl-5"
+  },
+  {
+   "name": "b3n15",
+   "state": [
+    "IDLE",
+    "RESERVED"
+   ],
+   "reason": "",
+   "reservation": "nvlr-spares-b3"
+  }
+ ]
+}
