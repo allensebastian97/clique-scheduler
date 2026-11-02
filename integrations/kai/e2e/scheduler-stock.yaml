@@ -1,0 +1,28 @@
+# KAI's default scheduler configuration (pkg/scheduler/conf_util at the pinned commit).
+actions: "allocate, consolidation, reclaim, preempt, stalegangeviction"
+tiers:
+- plugins:
+  - name: predicates
+  - name: proportion
+  - name: priority
+  - name: elastic
+  - name: kubeflow
+  - name: ray
+  - name: nodeavailability
+  - name: gpusharingorder
+  - name: gpupack
+  - name: resourcetype
+  - name: subgrouporder
+  - name: taskorder
+  - name: nominatednode
+  - name: dynamicresources
+  - name: nodeplacement
+    arguments:
+      cpu: binpack
+      gpu: binpack
+  - name: minruntime
+  - name: topology
+  - name: snapshot
+  - name: sg-nodelocalgreedy
+  - name: sg-multinodegang
+  - name: backgroundpods

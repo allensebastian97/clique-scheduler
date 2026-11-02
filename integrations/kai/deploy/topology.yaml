@@ -1,0 +1,9 @@
+# One topology level per NVLink domain. NVIDIA's GPU Operator labels every
+# GB200/GB300 node with the NVLink clique it belongs to.
+apiVersion: kai.scheduler/v1alpha1
+kind: Topology
+metadata:
+  name: nvlink
+spec:
+  levels:
+  - nodeLabel: nvidia.com/gpu.clique

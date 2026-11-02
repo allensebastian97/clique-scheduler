@@ -56,7 +56,7 @@ in-flight defrag holds live in memory.
 | `pkg/policy/` | The policy in Go, no scheduler dependencies. Every integration builds on it. | Done; matches the reference on all shared scenarios |
 | `testdata/scenarios/` | Shared scenarios: cluster state + operation + expected result. The contract every implementation must meet. | 18 hand-written, 40 randomized |
 | `reference/python/` | Reference implementation, a standalone Kubernetes scheduler, and a KWOK end-to-end suite | Working; see its [README](reference/python/README.md) |
-| KAI Scheduler plugin | Spares and same-clique replacement on top of KAI's topology segments and consolidation | Planned |
+| `integrations/kai/` | KAI Scheduler plugin: spares and same-rack replacement on top of KAI's topology segments and consolidation | Working: KAI's in-process tests, and a live test with KAI's scheduler and binder on KWOK; see its [README](integrations/kai/README.md) |
 | Kubernetes scheduler-framework plugin | Same policy for clusters running the stock kube-scheduler | Planned |
 | Slurm daemon | Defrag and replacement around Slurm's `topology/block` and `--segment` | Planned |
 
