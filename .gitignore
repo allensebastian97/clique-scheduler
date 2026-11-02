@@ -6,3 +6,4 @@ build/
 
 # Go build outputs
 integrations/kai/kai-scheduler
+integrations/slurm/nvlink-rack-slurmd

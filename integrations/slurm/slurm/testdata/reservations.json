@@ -1,0 +1,41 @@
+{
+ "reservations": [
+  {
+   "name": "nvlr-spares-b2",
+   "node_list": "b2n[17-18]",
+   "flags": [
+    "SPEC_NODES",
+    "FLEX"
+   ],
+   "users": "root,allensebastian"
+  },
+  {
+   "name": "nvlr-spares-b3",
+   "node_list": "b3n[15-16]",
+   "flags": [
+    "SPEC_NODES",
+    "FLEX"
+   ],
+   "users": "root,allensebastian"
+  },
+  {
+   "name": "nvlr-repl-5",
+   "node_list": "b2n[17-18],b3n[17-18]",
+   "flags": [
+    "OVERLAP",
+    "SPEC_NODES",
+    "FLEX"
+   ],
+   "users": "allensebastian"
+  },
+  {
+   "name": "nvlr-hold-test",
+   "node_list": "b1n[01-02]",
+   "flags": [
+    "IGNORE_JOBS",
+    "SPEC_NODES"
+   ],
+   "users": "allensebastian"
+  }
+ ]
+}
